@@ -15,41 +15,20 @@ void main(List<String> args) async {
 }
 
 Future<int> calc(Stream<List<int>> bitLines) async {
-  final List<int> col1 = [];
-  final List<int> col2 = [];
-  final List<int> col3 = [];
-  final List<int> col4 = [];
-  final List<int> col5 = [];
+  List<List<int>> columns = [];
 
   await for (final bitLine in bitLines) {
-    for (var col = 1; col <= 5; col++) {
-      switch (col) {
-        case 1:
-          col1.add(bitLine[0]);
-          break;
-        case 2:
-          col2.add(bitLine[1]);
-          break;
-        case 3:
-          col3.add(bitLine[2]);
-          break;
-        case 4:
-          col4.add(bitLine[3]);
-          break;
-        case 5:
-          col5.add(bitLine[4]);
-          break;
-      }
+    if (columns.isEmpty) {
+      columns = generateColumns(bitLine.length);
+    }
+
+    for (var col = 0; col < bitLine.length; col++) {
+      columns[col].add(bitLine[col]);
     }
   }
 
-  final gammaBits = [
-    mostCommon(col1),
-    mostCommon(col2),
-    mostCommon(col3),
-    mostCommon(col4),
-    mostCommon(col5)
-  ];
+  final List<int> gammaBits =
+      columns.map((List<int> column) => mostCommon(column)).toList();
 
   final epsilonBits = flipBits(gammaBits);
 
@@ -57,6 +36,14 @@ Future<int> calc(Stream<List<int>> bitLines) async {
   final epsilon = int.parse(epsilonBits.join('').toString(), radix: 2);
 
   return gamma * epsilon;
+}
+
+List<List<int>> generateColumns(int no) {
+  final List<List<int>> columns = [];
+  for (var i = 0; i < no; i++) {
+    columns.add([]);
+  }
+  return columns;
 }
 
 int mostCommon(List<int> list) {
